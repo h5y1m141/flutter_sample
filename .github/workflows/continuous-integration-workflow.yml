@@ -5,6 +5,11 @@ on: [push, pull_request]
 jobs:
   build:
     name: flutter drive
+    strategy:
+      matrix:
+        device:
+          - "iPad Pro (12.9-inch) (3rd generation) (13.3)"
+          - "iPhone 11 Pro Max (13.3)"
     runs-on: macOS-10.14
     steps:
       - name: Checkout source code
@@ -18,5 +23,17 @@ jobs:
         with:
           channel: 'stable'
       - run: flutter pub get
+      - name: list all simulators
+        run: xcrun instruments -s
+      - name: start simulator
+        run: |
+          UDID=$(
+            xcrun instruments -s |
+            awk \
+              -F ' *[][]' \
+              -v 'device=${{ matrix.device }}' \
+              '$1 == device { print $2 }'
+          )
+          xcrun simctl boot "${UDID:?No Simulator with this name found}"
       - name: flutter test
         run: flutter drive --target=test_driver/app.dart
