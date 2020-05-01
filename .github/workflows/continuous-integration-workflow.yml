@@ -1,0 +1,32 @@
+name: iPhone Simulator Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Safari Test
+    runs-on: macOS-10.14
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v1
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.16.3'
+      - name: Set up Appium
+        run: npm install appium
+      - name: Run Appium Server
+        run: ./node_modules/.bin/appium --log-timestamp --log-no-colors > appium.log &
+      - name: Build with Gradle
+        run: gradle cleanTest test --tests "com.example.safari.MobileSafariTest"
+        continue-on-error: true
+      - name: Upload logs
+        uses: actions/upload-artifact@v1
+        with:
+          name: appium.log
+          path: appium.log
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v1
+        with:
+          name: screenshots
+          path: screenshots
