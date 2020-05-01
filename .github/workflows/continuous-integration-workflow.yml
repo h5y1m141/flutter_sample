@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         device:
-          - "iPad Pro (12.9-inch) (4th generation) (13.4.1)"
+          - "iPad Air (3rd generation) (13.4.1)"
           - "iPhone 11 (13.4.1)"
     runs-on: macOS-10.14
     steps:
